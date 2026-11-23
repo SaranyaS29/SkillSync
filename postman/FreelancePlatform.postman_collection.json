@@ -1,0 +1,74 @@
+{
+  "info": {
+    "name": "Freelance Collaboration Platform",
+    "description": "Development API requests. Register/login two role-specific accounts and use the returned bearer token. Set resource IDs in collection variables from responses.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {"key":"baseUrl","value":"http://localhost:8080"},
+    {"key":"accessToken","value":""},
+    {"key":"projectId","value":"1"},
+    {"key":"proposalId","value":"1"},
+    {"key":"assignmentId","value":"1"},
+    {"key":"milestoneId","value":"1"},
+    {"key":"submissionId","value":"1"},
+    {"key":"paymentId","value":"1"},
+    {"key":"conversationId","value":"1"},
+    {"key":"notificationId","value":"1"},
+    {"key":"userId","value":"1"}
+  ],
+  "item": [
+    {"name":"Authentication","item":[
+      {"name":"Register client","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"fullName\": \"Client Example\",\n  \"email\": \"client@example.test\",\n  \"password\": \"ExamplePassword123!\",\n  \"role\": \"CLIENT\"\n}"},"url":"{{baseUrl}}/api/auth/register"}},
+      {"name":"Register freelancer","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"fullName\": \"Freelancer Example\",\n  \"email\": \"freelancer@example.test\",\n  \"password\": \"ExamplePassword123!\",\n  \"role\": \"FREELANCER\"\n}"},"url":"{{baseUrl}}/api/auth/register"}},
+      {"name":"Login (stores accessToken)","event":[{"listen":"test","script":{"type":"text/javascript","exec":["if (pm.response.code === 200 || pm.response.code === 201) { pm.collectionVariables.set('accessToken', pm.response.json().accessToken); }"]}}],"request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"email\": \"client@example.test\",\n  \"password\": \"ExamplePassword123!\"\n}"},"url":"{{baseUrl}}/api/auth/login"}},
+      {"name":"Current account","request":{"method":"GET","url":"{{baseUrl}}/api/auth/me"}}
+    ]},
+    {"name":"Profiles","item":[
+      {"name":"Search freelancers","request":{"method":"GET","url":"{{baseUrl}}/api/freelancers?skill=React&minExperience=3&maxExperience=10&minRate=350&maxRate=1500&availability=AVAILABLE&minRating=4&size=20"}},
+      {"name":"Get freelancer profile","request":{"method":"GET","url":"{{baseUrl}}/api/freelancers/{{userId}}"}},
+      {"name":"Update freelancer profile","request":{"method":"PUT","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"headline\": \"Full stack developer\",\n  \"description\": \"Profile summary\",\n  \"hourlyRate\": 55,\n  \"experienceYears\": 5,\n  \"availability\": \"AVAILABLE\",\n  \"location\": \"Remote\",\n  \"skills\": [\"Java\", \"React\"],\n  \"portfolioItems\": [{\"title\":\"Sample work\",\"description\":\"A project\",\"url\":\"https://example.com\"}]\n}"},"url":"{{baseUrl}}/api/freelancers/profile"}},
+      {"name":"Get client profile","request":{"method":"GET","url":"{{baseUrl}}/api/clients/profile"}},
+      {"name":"Update client profile","request":{"method":"PUT","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"companyName\": \"Example Company\",\n  \"companyDescription\": \"Company details\",\n  \"website\": \"https://example.com\",\n  \"location\": \"Remote\"\n}"},"url":"{{baseUrl}}/api/clients/profile"}}
+    ]},
+    {"name":"Projects and proposals","item":[
+      {"name":"Browse projects","request":{"method":"GET","url":"{{baseUrl}}/api/projects?q=React&page=0&size=20&sort=createdAt,desc"}},
+      {"name":"Create and publish project","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"title\": \"Build a booking dashboard\",\n  \"description\": \"Create a responsive booking dashboard and document the handoff.\",\n  \"projectType\": \"FIXED_PRICE\",\n  \"budgetMin\": 1500,\n  \"budgetMax\": 4000,\n  \"experienceLevel\": \"INTERMEDIATE\",\n  \"category\": \"Web development\",\n  \"deadline\": \"2027-03-30\",\n  \"requiredSkills\": [\"React\", \"Java\"],\n  \"publish\": true\n}"},"url":"{{baseUrl}}/api/projects"}},
+      {"name":"My client projects","request":{"method":"GET","url":"{{baseUrl}}/api/projects/mine"}},
+      {"name":"Edit project","request":{"method":"PUT","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"title\": \"E-commerce Website Development\",\n  \"description\": \"Build a responsive e-commerce website with product listing, shopping cart and payment integration.\",\n  \"projectType\": \"FIXED_PRICE\",\n  \"budgetMin\": 30000,\n  \"budgetMax\": 50000,\n  \"experienceLevel\": \"INTERMEDIATE\",\n  \"category\": \"E-commerce\",\n  \"deadline\": \"2027-03-30\",\n  \"requiredSkills\": [\"Java\", \"React\", \"MySQL\"],\n  \"publish\": true\n}"},"url":"{{baseUrl}}/api/projects/{{projectId}}"}},
+      {"name":"Cancel project (only if no accepted proposal)","request":{"method":"PUT","url":"{{baseUrl}}/api/projects/{{projectId}}/cancel"}},
+      {"name":"Freelancer matches","request":{"method":"GET","url":"{{baseUrl}}/api/projects/{{projectId}}/matches"}},
+      {"name":"Submit proposal","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"coverLetter\": \"I can deliver the agreed scope and milestones.\",\n  \"proposedBudget\": 2500,\n  \"completionDays\": 28,\n  \"portfolioLinks\": [\"https://example.com/work\"]\n}"},"url":"{{baseUrl}}/api/projects/{{projectId}}/proposals"}},
+      {"name":"My proposals","request":{"method":"GET","url":"{{baseUrl}}/api/proposals/my"}},
+      {"name":"Project proposals","request":{"method":"GET","url":"{{baseUrl}}/api/projects/{{projectId}}/proposals"}},
+      {"name":"Accept proposal","request":{"method":"PUT","url":"{{baseUrl}}/api/proposals/{{proposalId}}/accept"}},
+      {"name":"Reject proposal","request":{"method":"PUT","url":"{{baseUrl}}/api/proposals/{{proposalId}}/reject"}},
+      {"name":"Withdraw proposal","request":{"method":"PUT","url":"{{baseUrl}}/api/proposals/{{proposalId}}/withdraw"}}
+    ]},
+    {"name":"Assignments and milestones","item":[
+      {"name":"My assignments","request":{"method":"GET","url":"{{baseUrl}}/api/assignments/my"}},
+      {"name":"Add milestone","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"title\": \"First delivery\",\n  \"description\": \"Design and implementation milestone\",\n  \"dueDate\": \"2027-02-20\",\n  \"amount\": 1000,\n  \"sequenceNumber\": 1\n}"},"url":"{{baseUrl}}/api/assignments/{{assignmentId}}/milestones"}},
+      {"name":"List milestones","request":{"method":"GET","url":"{{baseUrl}}/api/assignments/{{assignmentId}}/milestones"}},
+      {"name":"Submit work","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"description\": \"The milestone deliverable is ready for review.\",\n  \"comments\": \"Please review the handoff notes.\"\n}"},"url":"{{baseUrl}}/api/milestones/{{milestoneId}}/submit"}},
+      {"name":"Approve milestone","request":{"method":"PUT","url":"{{baseUrl}}/api/milestones/{{milestoneId}}/approve"}},
+      {"name":"Request revision","request":{"method":"PUT","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"comment\": \"Please address the feedback in the review notes.\"\n}"},"url":"{{baseUrl}}/api/milestones/{{milestoneId}}/request-revision"}}
+    ]},
+    {"name":"Messages and notifications","item":[
+      {"name":"Open assigned project conversation","request":{"method":"POST","url":"{{baseUrl}}/api/projects/{{projectId}}/conversation"}},
+      {"name":"List messages","request":{"method":"GET","url":"{{baseUrl}}/api/conversations/{{conversationId}}/messages?size=50"}},
+      {"name":"Send message","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"body\": \"I have posted the latest progress update.\"\n}"},"url":"{{baseUrl}}/api/conversations/{{conversationId}}/messages"}},
+      {"name":"List notifications","request":{"method":"GET","url":"{{baseUrl}}/api/notifications"}},
+      {"name":"Unread notification count","request":{"method":"GET","url":"{{baseUrl}}/api/notifications/unread-count"}},
+      {"name":"Mark notification read","request":{"method":"PUT","url":"{{baseUrl}}/api/notifications/{{notificationId}}/read"}}
+    ]},
+    {"name":"Payments, reviews, and reports","item":[
+      {"name":"My payments","request":{"method":"GET","url":"{{baseUrl}}/api/payments/my"}},
+      {"name":"Start sandbox checkout","request":{"method":"POST","url":"{{baseUrl}}/api/payments/{{paymentId}}/checkout"}},
+      {"name":"Simulate successful payment (dev profile only)","request":{"method":"POST","url":"{{baseUrl}}/api/dev/payments/{{paymentId}}/simulate-success"}},
+      {"name":"Download receipt","request":{"method":"GET","url":"{{baseUrl}}/api/payments/{{paymentId}}/receipt"}},
+      {"name":"Review completed assignment","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"rating\": 5,\n  \"feedback\": \"Clear communication and a strong delivery.\"\n}"},"url":"{{baseUrl}}/api/assignments/{{assignmentId}}/reviews"}},
+      {"name":"Submit report","request":{"method":"POST","header":[{"key":"Content-Type","value":"application/json"}],"body":{"mode":"raw","raw":"{\n  \"targetUserId\": {{userId}},\n  \"projectId\": null,\n  \"reason\": \"Describe the concern here.\"\n}"},"url":"{{baseUrl}}/api/reports"}}
+    ]}
+  ],
+  "auth": {"type":"bearer","bearer":[{"key":"token","value":"{{accessToken}}","type":"string"}]}
+}

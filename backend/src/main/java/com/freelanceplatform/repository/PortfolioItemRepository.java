@@ -1,0 +1,5 @@
+package com.freelanceplatform.repository;
+import com.freelanceplatform.entity.PortfolioItem;
+import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.List;
+public interface PortfolioItemRepository extends JpaRepository<PortfolioItem,Long>{List<PortfolioItem> findByFreelancerIdOrderById(Long freelancerId);void deleteByFreelancerId(Long freelancerId);}
